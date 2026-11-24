@@ -1,0 +1,5 @@
+Planer.xcodeproj/
+Planer/Info.plist
+build/
+DerivedData/
+*.xcuserstate

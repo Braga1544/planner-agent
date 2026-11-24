@@ -1,0 +1,41 @@
+# everything local: docker compose -f docker-compose.local.yml up --build
+name: planner-local
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: planner
+      POSTGRES_PASSWORD: planner
+      POSTGRES_DB: planner
+    volumes:
+      - pgdata-local:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planner"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    security_opt:
+      - "no-new-privileges:true"
+
+  api:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+asyncpg://planner:planner@db:5432/planner
+    depends_on:
+      db:
+        condition: service_healthy
+    # web + api on one port, bind to the lan ip on a server
+    ports:
+      - "8080:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - "no-new-privileges:true"
+
+volumes:
+  pgdata-local:

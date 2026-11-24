@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/* zinc neutrals + one indigo accent, dark mode follows prefers-color-scheme */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e4e4e7;
+  --color-text: #18181b;
+  --color-muted: #71717a;
+  --color-accent: #4f55c4;
+  --color-accent-soft: #eeeffb;
+  /* text on accent (primary button, check), dark in dark mode for contrast */
+  --color-on-accent: #ffffff;
+  --color-danger: #c2413b;
+
+  --animate-dialog-in: dialog-in 150ms ease-out;
+  --animate-backdrop-in: backdrop-in 150ms ease-out;
+
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #18181b;
+    --color-surface: #202024;
+    --color-border: #2f2f35;
+    --color-text: #f4f4f5;
+    --color-muted: #a1a1aa;
+    --color-accent: #8c91e3;
+    --color-accent-soft: #2a2b45;
+    --color-on-accent: #18181b;
+    --color-danger: #f08a84;
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+  }
+
+  input[type="checkbox"]:not(.check) {
+    accent-color: var(--color-accent);
+  }
+}
+
+@layer components {
+  /* round checkbox, still a native input for keyboard + screen readers */
+  .check {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 9999px;
+    border: 1.5px solid color-mix(in oklab, var(--color-muted) 70%, transparent);
+    background-color: var(--color-surface);
+    cursor: pointer;
+    transition:
+      background-color 120ms,
+      border-color 120ms;
+  }
+  .check::before {
+    content: "";
+    width: 0.625rem;
+    height: 0.625rem;
+    background-color: var(--color-on-accent);
+    clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 26%, 86% 12%, 38% 72%);
+    transform: scale(0);
+    transition: transform 120ms;
+  }
+  .check:hover {
+    border-color: var(--color-accent);
+  }
+  .check:checked {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .check:checked::before {
+    transform: scale(1);
+  }
+  .check:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 40%, transparent);
+  }
+  .check:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .check,
+    .check::before {
+      transition: none;
+    }
+  }
+}
